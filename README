@@ -6,6 +6,56 @@ GIT:
 GITWEB:
         http://git.0pointer.de/?p=mutrace.git
 
+INSTALLATION:
+        sudo apt-get install shtool autotools-dev binutils-dev
+        aclocal
+        libtoolize
+        autoheader
+        autoconf
+        automake --add-missing --foreign
+        ./configure
+        make
+        sudo make install
+        
+  HINTS FOR INSTALLATION:
+        If many dependencies are missing when running ./configure, I recommend installing auto-apt. It will monitor ./configure and install packages on the fly!
+          sudo apt-get install auto-apt
+          sudo auto-apt update
+          sudo auto-apt updatedb && sudo auto-apt update-local
+          sudo auto-apt run ./configure
+        
+        In case of missing header files when running make, a useful tool is apt-file:
+          sudo apt-get install apt-file
+          sudo apt-file update
+          apt-file search <missing-file>
+        After installing the package you might need to rerun ./configure before running make.
+        
+  TROUBLESHOOTING INSTALLATION:
+        In case of this error:
+           backtrace-symbols.c:53:23: fatal error: libiberty.h: No such file or directory
+            #include <libiberty.h>
+        you might need to change this line to:
+            #include <libiberty/libiberty.h>
+            
+        In case of huge amount of error that start with:
+            /usr/include/libiberty/libiberty.h:110:38: error: expected declaration specifiers before 'ATTRIBUTE_RETURNS_NONNULL'
+             extern char *basename (const char *) ATTRIBUTE_RETURNS_NONNULL ATTRIBUTE_NONNULL(1);
+        you probably have 2 files ansidecl.h which differ. 
+        E.g. those:
+            /usr/include/ansidecl.h
+            /usr/include/libiberty/ansidecl.h
+        You should use the latter. To do this, rename the former and link to the later instead:
+            sudo mv /usr/include/ansidecl.h /usr/include/ansidecl.h.tmp
+            sudo ln -s /usr/include/libiberty/ansidecl.h /usr/include/ansidecl.h
+            make
+            
+            When the compilation is successful, revert it by running:
+            sudo rm /usr/include/ansidecl.h
+            sudo mv /usr/include/ansidecl.h.tmp /usr/include/ansidecl.h
+
+USAGE:
+        LD_PRELOAD=/usr/local/lib/libmutrace.so <your program>
+        
 NOTES:
         For a terse overview what mutrace can do for you, please read
         the announcement blog story:
