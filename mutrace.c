@@ -972,6 +972,8 @@ static void show_summary_internal(void) {
         }
 
         if (n <= 0) {
+                for (u = 0; u < hash_size; u++)
+                        unlock_hash_mutex(u);
                 fprintf(stderr,
                         "mutrace: No mutexes used.\n");
                 return;
@@ -1059,6 +1061,8 @@ static void show_summary_internal(void) {
         }
 
         if (n <= 0) {
+                for (u = 0; u < hash_size; u++)
+                        unlock_hash_cond(u);
                 fprintf(stderr,
                         "mutrace: No condition variables used.\n");
                 return;
